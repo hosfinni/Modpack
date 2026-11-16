@@ -333,6 +333,53 @@ pub enum Droplet {
     Full,
 }
 
+/// The 9x9 bottle each place on the thirst row shows: `c` the cork, `#` the glass's
+/// rim, `o` what the bottle holds. tools/make_content.py draws the same bottle into
+/// the content pack's textures; the mod draws it pixel by pixel when they are missing.
+pub const BOTTLE: [&str; 9] = [
+    "...ccc...",
+    "...#o#...",
+    "..#ooo#..",
+    ".#ooooo#.",
+    ".#ooooo#.",
+    ".#ooooo#.",
+    ".#ooooo#.",
+    ".#ooooo#.",
+    "..#####..",
+];
+/// The bottle's colours, 0xAARRGGBB.
+pub const CORK: u32 = 0xFF8A_5A2B;
+pub const RIM: u32 = 0xFF10_182A;
+pub const WATER: u32 = 0xFF3F_76E4;
+pub const GLASS: u32 = 0xFF2A_3350;
+pub const SHINE: u32 = 0xFF9C_C4FF;
+/// The first row of the bottle a half bottle has water in.
+const HALF_LINE: usize = 5;
+
+/// The colour of pixel `(x, y)` of a bottle filled as `droplet`, None where it is clear.
+pub fn bottle_pixel(droplet: Droplet, x: usize, y: usize) -> Option<u32> {
+    let key = *BOTTLE.get(y)?.as_bytes().get(x)?;
+    match key {
+        b'c' => Some(CORK),
+        b'#' => Some(RIM),
+        b'o' => {
+            let wet = match droplet {
+                Droplet::Full => y >= 2,
+                Droplet::Half => y >= HALF_LINE,
+                Droplet::Empty => false,
+            };
+            Some(if !wet {
+                GLASS
+            } else if (x, y) == (2, 4) || (x, y) == (2, 5) {
+                SHINE
+            } else {
+                WATER
+            })
+        }
+        _ => None,
+    }
+}
+
 /// The ten droplets of the HUD row as `(x, y, droplet)`, for a screen of `width` x
 /// `height` GUI pixels. They mirror vanilla's food row (right of the hotbar's centre,
 /// filled from the right) and sit `rows_above_food` rows of 10 pixels above it.
@@ -592,5 +639,22 @@ mod tests {
         }
         let low = (0..10_000u64).filter(|s| roll(*s) < 0.25).count();
         assert!((2200..2800).contains(&low), "{low} of 10000 under 0.25");
+    }
+
+    #[test]
+    fn a_bottle_holds_water_as_its_droplet_says() {
+        let count = |droplet, colour| {
+            (0..9)
+                .flat_map(|y| (0..9).map(move |x| (x, y)))
+                .filter(|&(x, y)| bottle_pixel(droplet, x, y) == Some(colour))
+                .count()
+        };
+        let wet = |droplet| count(droplet, WATER) + count(droplet, SHINE);
+        assert_eq!(wet(Droplet::Empty), 0);
+        assert!(wet(Droplet::Half) > 0 && wet(Droplet::Half) < wet(Droplet::Full));
+        assert!(count(Droplet::Full, CORK) == 3 && count(Droplet::Full, RIM) > 10);
+        assert_eq!(bottle_pixel(Droplet::Full, 0, 0), None);
+        assert_eq!(bottle_pixel(Droplet::Full, 9, 0), None);
+        assert!(BOTTLE.iter().all(|row| row.len() == 9));
     }
 }

@@ -247,21 +247,23 @@ def ore_bits(metal, washed):
     return canvas
 
 
-def droplet(fill):
-    """A 9x9 HUD droplet: 0 empty, 1 the right half, 2 full (the food row fills from the right)."""
-    rows = ['....#....', '...#o#...', '...#o#...', '..#ooo#..', '.#ooooo#.', '.#ooooo#.', '.#ooooo#.',
-            '..#ooo#..', '...###...']
+def thirst_bottle(fill):
+    """A 9x9 HUD bottle: 0 empty, 1 half full, 2 full. hz_survival's core
+    (thirst::BOTTLE, bottle_pixel) draws the same bottle when these are missing."""
+    rows = ['...ccc...', '...#o#...', '..#ooo#..', '.#ooooo#.', '.#ooooo#.', '.#ooooo#.', '.#ooooo#.',
+            '.#ooooo#.', '..#####..']
     canvas = Canvas(9, 9)
-    water, rim, hollow = rgb(0x3F76E4), rgb(0x10182A), rgb(0x2A3350)
+    cork, rim, water, glass, shine = (rgb(0x8A5A2B), rgb(0x10182A), rgb(0x3F76E4), rgb(0x2A3350),
+                                      rgb(0x9CC4FF))
     for y, row in enumerate(rows):
         for x, key in enumerate(row):
-            if key == '#':
+            if key == 'c':
+                canvas.put(x, y, cork)
+            elif key == '#':
                 canvas.put(x, y, rim)
             elif key == 'o':
-                wet = fill == 2 or (fill == 1 and x >= 4)
-                canvas.put(x, y, water if wet else hollow)
-    if fill:
-        canvas.put(5, 4, rgb(0x9CC4FF))
+                wet = (fill == 2 and y >= 2) or (fill == 1 and y >= 5)
+                canvas.put(x, y, (shine if (x, y) in ((2, 4), (2, 5)) else water) if wet else glass)
     return canvas
 
 
@@ -481,7 +483,7 @@ def build():
     pack.texture('mob_effect/parched', parched_icon())
     pack.lang[f'effect.{MOD}.parched'] = 'Parched'
     for name, fill in (('thirst_empty', 0), ('thirst_half', 1), ('thirst_full', 2)):
-        pack.texture(f'gui/{name}', droplet(fill))
+        pack.texture(f'gui/{name}', thirst_bottle(fill))
 
     pack.json(f'data/{MOD}/horizon/creative_tab/hardship.json',
               {'title': 'Horizon Hardship', 'icon': f'{MOD}:greatsword', 'items': pack.tab})

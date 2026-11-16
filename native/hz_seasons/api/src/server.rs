@@ -220,6 +220,16 @@ impl Server {
         };
         let _ = CALENDAR.set(&mut *host, Holder::Level, calendar);
         if !turned {
+            // Not yet: say how many more nights it will take.
+            if config.enabled {
+                let left = config.sleeps_per_shift.saturating_sub(calendar.sleeps);
+                let line = nights_left(left);
+                for player in host.server_players() {
+                    if player.dimension == OVERWORLD {
+                        host.action_bar(player.uuid, Text::colored(line.clone(), 0xE8C36A));
+                    }
+                }
+            }
             return;
         }
         self.prune_anchors(host);
@@ -349,6 +359,14 @@ impl Server {
 }
 
 /// The line under "Biome Shift": the season the climate turned to.
+/// What a player reads on waking when the climate hasn't turned yet.
+pub fn nights_left(left: u32) -> String {
+    match left {
+        1 => "The climate turns after one more night".to_owned(),
+        n => format!("The climate turns after {n} more nights"),
+    }
+}
+
 pub fn subtitle(epoch: i64, shifts_per_year: u32) -> String {
     format!(
         "{}, year {}",

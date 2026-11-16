@@ -3,12 +3,12 @@
 #
 # Vanilla's look, lit a little better and cheaply: warm block light against cool
 # skylight, coloured light from soul fire and lava, a glow round a low sun, light
-# shafts, and a mild grade. No shadow map and one full-screen pass, so it costs a
-# fraction of what a shadow-mapping pack does.
+# shafts, a mild grade and soft, light shadows. One small shadow map and one
+# full-screen pass, so it costs a fraction of what a full shader pack does.
 schema = 1
 id = "hz_softlight"
 name = "Hardship Soft Light"
-version = "0.1.1"
+version = "0.1.2"
 api = "0.1"
 description = "Vanilla's look with better light: warm lamps, cool sky, a low sun's glow and light shafts, at a fraction of a full shader pack's cost."
 authors = ["Horizon Hardship"]
@@ -22,12 +22,19 @@ file = "sky.wgsl"
 file = "material.wgsl"
 name = "Terrain light"
 
+# A small shadow map from the sun (the moon by night), for the subtle shadows of the
+# material stage. Off with the "Shadows" option, which drops the pass.
+[shadow]
+resolution = 1024
+distance = 96.0
+option = "shadows"
+
 [[post]]
 file = "post.wgsl"
 name = "Shafts and grade"
 
 [budget]
-gpu_ms = 0.8
+gpu_ms = 1.5
 
 # The colour each light source gives its light (written as vanilla's colours are,
 # in gamma). The first entry naming a block wins.
@@ -72,6 +79,22 @@ name = "Lamp warmth"
 description = "How warm lamps and how cool the sky tint what they light."
 type = "float"
 default = 0.5
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "shadows"
+name = "Shadows"
+description = "Soft, light shadows from the sun and the moon. Costs a shadow pass."
+type = "bool"
+default = true
+
+[[options]]
+id = "shadow_strength"
+name = "Shadow strength"
+type = "float"
+default = 0.35
 min = 0.0
 max = 1.0
 step = 0.05

@@ -47,6 +47,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "hz-vfx-core"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "toml",
+]
+
+[[package]]
 name = "hz-worldgen-core"
 version = "0.1.0"
 dependencies = [

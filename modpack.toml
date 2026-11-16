@@ -3,7 +3,7 @@
 
 [modpack]
 name = "Horizon Hardship"
-version = "0.1.1"
+version = "0.1.2"
 game = "26.3"
 
 [horizon]
@@ -21,8 +21,9 @@ mixins_revision = "5a64af938ec86b00d53d16a408aabc0038fb3e57"
 # Native mods are not part of the server's mod-list handshake yet, so players and the
 # server must install the same versions of these by hand (or from this pack).
 [native]
-hz_travel = "0.1.1"
-hz_survival = "0.1.1"
-hz_worldgen = "0.1.1"
-hz_seasons = "0.1.1"
-hz_arsenal = "0.1.1"
+hz_travel = "0.1.2"
+hz_survival = "0.1.2"
+hz_worldgen = "0.1.2"
+hz_seasons = "0.1.2"
+hz_arsenal = "0.1.2"
+hz_vfx = "0.1.2"

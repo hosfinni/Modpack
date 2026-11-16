@@ -42,7 +42,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             enabled: true,
-            sleeps_per_shift: 3,
+            sleeps_per_shift: 1,
             shifts_per_year: 8,
             season_steps: 1.0,
             drift_steps: 1.0,
@@ -455,7 +455,7 @@ mod tests {
     fn the_shipped_config_parses_and_bad_values_are_refused() {
         let config = Config::shipped();
         assert!(config.enabled && config.features.ground && config.client.banner);
-        assert_eq!(config.sleeps_per_shift, 3);
+        assert_eq!(config.sleeps_per_shift, 1);
         assert_eq!(config.anchor.radius, 48);
         assert!(Config::parse("sleeps_per_shift = 0").is_err());
         assert!(Config::parse("shifts_per_year = 2").is_err());
@@ -466,7 +466,11 @@ mod tests {
 
     #[test]
     fn the_calendar_turns_after_enough_nights() {
-        let config = Config::shipped();
+        // Shipped, every night slept through turns the climate.
+        let mut every = Calendar::default();
+        assert!((0..3).all(|_| every.slept(&Config::shipped())));
+        assert_eq!(every.epoch, 3);
+        let config = Config::parse("sleeps_per_shift = 3").unwrap();
         let mut calendar = Calendar::default();
         let turned: Vec<bool> = (0..7).map(|_| calendar.slept(&config)).collect();
         assert_eq!(turned, [false, false, true, false, false, true, false]);

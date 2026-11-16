@@ -1,0 +1,46 @@
+# hz_vfx: small visual effects. Written to config/hz_vfx.toml the first time the game
+# runs with the mod; edit it there. Effects a client draws for itself follow that
+# client's file; those everyone sees (blocks, hits, explosions) follow the server's.
+
+# How much of everything: 1.0 as shipped, 0.5 half the particles and half the shake,
+# 0 none at all. At most 2.
+intensity = 1.0
+
+[blocks]
+# A puff of the block's own particles where a block is placed.
+place = true
+# A little more debris where a block is broken.
+break = true
+
+[combat]
+# Sparks where a blow lands; each Hardship weapon its own kind.
+hits = true
+# A short trail from your swing to what you hit.
+swing_trails = true
+
+[movement]
+# Dust from the ground where you land from a fall.
+landing = true
+# Dust behind your feet while you sprint.
+footsteps = true
+# A splash when you drop into water.
+splash = true
+# Your breath shows in cold places.
+breath = true
+
+[ambient]
+# Fireflies over grass on warm nights.
+fireflies = true
+# Embers over fire, campfires and lava.
+embers = true
+# Dust drifting in deep caves.
+cave_dust = true
+# How far from you ambient effects appear, in blocks.
+radius = 12
+
+[shake]
+# The camera shakes a little for a hard landing, a blow taken and an explosion
+# nearby. The game's Distortion Effects setting scales it too.
+enabled = true
+# How strong: 1.0 as shipped.
+strength = 1.0

@@ -4,8 +4,10 @@
 
 enabled = true
 
-# A shift happens when the night is slept through this many times.
-sleeps_per_shift = 3
+# A shift happens when the night is slept through this many times: 1, every
+# morning after a night slept through. With more, waking up says how many nights
+# are left.
+sleeps_per_shift = 1
 # Shifts in a year. A year runs spring, summer, autumn, winter: land warms toward
 # summer and cools toward winter, and comes back to how it was generated each spring
 # (apart from the drift below).

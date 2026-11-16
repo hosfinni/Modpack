@@ -12,7 +12,7 @@ use horizon_client::mod_api::{
     NetFromServerEvent, Tag, Text, TooltipEvent,
 };
 use hz_survival_core::thirst::{
-    self, CHANNEL, Droplet, Exposure, MAX, Stage, Thirst, ThirstConfig,
+    self, BOTTLE, CHANNEL, Droplet, Exposure, MAX, Stage, Thirst, ThirstConfig, bottle_pixel,
 };
 
 /// A player's thirst, kept with them in the save (hundredths of a point).
@@ -351,19 +351,18 @@ impl State {
             if host.sprite(event.batch, sprite, [0.0, 0.0, 9.0, 9.0], [x, y, 9.0, 9.0]) {
                 continue;
             }
-            host.fill(event.batch, [x + 1.0, y + 1.0, 7.0, 7.0], 0xFF10_1820);
-            let filled = match droplet {
-                Droplet::Empty => 0.0,
-                Droplet::Half => 3.0,
-                Droplet::Full => 5.0,
-            };
-            if filled > 0.0 {
-                // The food row fills from the right, so a half is the right half.
-                host.fill(
-                    event.batch,
-                    [x + 7.0 - filled, y + 2.0, filled, 5.0],
-                    0xFF3F_76E4,
-                );
+            // No texture (the content pack is off, or its GUI textures didn't load):
+            // the same bottle, a pixel at a time.
+            for (py, row) in BOTTLE.iter().enumerate() {
+                for px in 0..row.len() {
+                    if let Some(colour) = bottle_pixel(droplet, px, py) {
+                        host.fill(
+                            event.batch,
+                            [x + px as f32, y + py as f32, 1.0, 1.0],
+                            colour,
+                        );
+                    }
+                }
             }
         }
     }

@@ -33,7 +33,7 @@ goals but does not version.
 | `Host::add_effect`, `hurt_entity` | server | Thirst's debuffs and damage |
 | `AttachmentType` on `Holder::Player` | server | Thirst and skills saved with the player |
 | `net_send_to_player`, `net_from_server` | both | The thirst bar and the player's own skill levels reach their client |
-| `health_hud`, `hud`, `Host::sprite`, `Host::fill` | client | The droplet row above the food bar |
+| `health_hud`, `hud`, `Host::sprite`, `Host::fill` | client | The bottle row above the food bar (drawn pixel by pixel when the textures are missing) |
 | `tooltip` | client | What an item does to thirst |
 | `destroy_block`, `mob_killed`, `furnace_extract` | server | Mining, Combat and Smithing experience |
 | `break_speed` | both | Ore is dug slower or faster by Mining level |
@@ -94,13 +94,25 @@ goals but does not version.
 | `vehicle_moved_v2` | server | Hold boats, minecarts and mounts to a top speed |
 | `tooltip` | client | Say why an elytra or a Riptide trident no longer works |
 
+## hz_vfx
+
+| Hook or helper | Side | Use |
+| --- | --- | --- |
+| `block_place`, `destroy_block`, `Host::send_particles` | server | Dust where a block is placed, debris where one breaks |
+| `hurt_enemy`, `Host::entity`, `entity_position` | server | Sparks of the weapon's kind where a blow lands |
+| `explosion_detonate`, `Host::server_players`, `net_send_to_player` | server | Smoke and ash; a shake for the players near |
+| `client_tick_post`, `Host::player`, `client_state`, `block`, `biome`, `clock`, `add_particle` | client | Landing and sprint dust, splash, breath, fireflies, embers, cave dust |
+| `client_attack`, `Host::client_entities` | client | The swing's trail |
+| `client_hurt`, `net_from_server`, `camera_shake` | client | The camera's shake |
+| `client_level_load` | client | Forget the player's motion in a new world |
+
 ## What Horizon does not offer yet
 
 These would have been used had they existed, and are why some things are as they are:
 
 | Missing | Effect on the pack |
 | --- | --- |
-| A hook on structure placement | Structures can't be moved onto the tectonic terrain, or dropped by kind |
+| A hook on structure placement, or on the height structures are placed at (`Pipeline::base_height` reads vanilla's noise, in a generic impl horizon-mixins can't inject into) | Structures can't be moved onto the tectonic terrain, or dropped by kind: they float or sit buried |
 | A hook on feature placement, or worldgen files from a mod | Ores can't be made rarer from a mod; the pack makes them harder to refine instead |
 | A server helper to move a player | Dashes go through a message to the player's own client |
 | `hurt_enemy` for a player target | A move's stagger and area need a mob target |

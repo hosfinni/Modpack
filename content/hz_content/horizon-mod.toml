@@ -1,6 +1,6 @@
 id = "hz_content"
 name = "Horizon Hardship Content"
-version = "0.1.0"
+version = "0.1.1"
 description = "The items, blocks and effects of the Horizon Hardship pack: drinks for thirst, weapons for hz_arsenal's movesets, crushed and washed ores, and the climate anchor. Data and assets only; the behaviour is in the pack's native mods."
 authors = ["Horizon Hardship"]
 # A content mod: blocks, items and mob effects from data/ and assets/, no code (API 0.2).

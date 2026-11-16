@@ -1,6 +1,37 @@
 override soft_light: bool = true;
 override light_warmth: f32 = 0.5;
 override wet_ground: bool = true;
+override shadows: bool = true;
+override shadow_strength: f32 = 0.35;
+
+// How much of the sun (or moon) reaches this point, 0..1: the shadow map, read at
+// five points a texel and a half apart and averaged, so edges are soft. Faces turned
+// from the light are left to the face shading below, and the shadow fades out toward
+// the edge of the map, so it never ends in a line.
+fn sunlit(input: MaterialInput) -> f32 {
+    if !shadows || frame.has_shadow == 0u {
+        return 1.0;
+    }
+    let facing = dot(input.normal, frame.light_direction);
+    if facing <= 0.0 {
+        return 1.0;
+    }
+    // Off the surface a little, more on faces the light grazes: no shadow acne.
+    let bias = frame.shadow_center_texel * (1.5 + 2.0 * (1.0 - facing));
+    let p = shadow_position(input.position + input.normal * bias);
+    if any(p.xy <= vec2<f32>(0.0)) || any(p.xy >= vec2<f32>(1.0)) || p.z >= 1.0 {
+        return 1.0;
+    }
+    let step = 1.5 / max(frame.shadow_resolution, 1.0);
+    var lit = textureSampleCompareLevel(shadow_map, shadow_sampler, p.xy, p.z);
+    lit += textureSampleCompareLevel(shadow_map, shadow_sampler, p.xy + vec2<f32>(step, 0.0), p.z);
+    lit += textureSampleCompareLevel(shadow_map, shadow_sampler, p.xy - vec2<f32>(step, 0.0), p.z);
+    lit += textureSampleCompareLevel(shadow_map, shadow_sampler, p.xy + vec2<f32>(0.0, step), p.z);
+    lit += textureSampleCompareLevel(shadow_map, shadow_sampler, p.xy - vec2<f32>(0.0, step), p.z);
+    lit *= 0.2;
+    let far = length(input.position) / max(frame.shadow_distance, 1.0);
+    return mix(lit, 1.0, smoothstep(0.7, 0.95, far));
+}
 
 // A colour with its brightness taken out: only its hue is left to tint with.
 fn hue_of(c: vec3<f32>) -> vec3<f32> {
@@ -14,8 +45,8 @@ fn hue_of(c: vec3<f32>) -> vec3<f32> {
 // - the side of things facing the sun or the moon is brighter, the far side darker;
 // - a block that shines glows a little over its own light;
 // - open ground darkens in the rain.
-// Nothing here reads a shadow map or another texture pass, so it costs a few
-// multiplications a pixel.
+// - with `shadows`, what stands between a point and the sun shades it, softly.
+// Apart from those five shadow-map reads it costs a few multiplications a pixel.
 fn material(input: MaterialInput) -> Surface {
     let base = input.albedo * input.tint;
     var light = input.lightmap;
@@ -38,6 +69,13 @@ fn material(input: MaterialInput) -> Surface {
         light *= 1.0 + strength * dot(input.normal, frame.light_direction);
 
         light += input.colored_light * 0.6;
+    }
+    if shadows {
+        // Subtle: the shadowed part of the light is the sky's share of it, and less
+        // when the sun is low. Torch light and caves are left alone.
+        let open = input.light.y * input.light.y * smoothstep(0.02, 0.25, frame.light_direction.y);
+        let shade = (1.0 - sunlit(input)) * shadow_strength * open * (0.4 + 0.6 * daylight());
+        light *= 1.0 - shade;
     }
     var color = base.rgb * light;
     if soft_light {
