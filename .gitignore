@@ -3,3 +3,4 @@
 __pycache__/
 /content/hz_content/target/
 /.claude-flow/
+/.swarm/
