@@ -9,9 +9,12 @@ use std::sync::{Arc, RwLock};
 
 use horizon_client::mod_api::{
     BlockStateId, ChunkGenerateEvent, ConfigLoadingEvent, ConfigReloadingEvent, Hooks, Host,
-    LodColumnEvent, NativeConfig, NativeConfigKind, NativeGenerate, RegisterConfigsEvent,
+    LodColumnEvent, NativeConfig, NativeConfigKind, NativeGenerate, NativeProtoChunk,
+    RegisterConfigsEvent,
 };
-use hz_worldgen_core::{Biome, Block, Column, Config, DEFAULT_CONFIG, Terrain, World};
+use hz_worldgen_core::{
+    Biome, Block, Column, Config, DEFAULT_CONFIG, Sea, Terrain, World, additions,
+};
 
 const MOD_ID: &str = "hz_worldgen";
 const CONFIG_FILE: &str = "hz_worldgen.toml";
@@ -21,6 +24,18 @@ const OVERWORLD: &str = "minecraft:overworld";
 const BIOME_DEPTH: i32 = 16;
 /// The overworld's build range, for far terrain, which isn't told the level's.
 const FAR_RANGE: (i32, i32) = (-64, 320);
+/// Vanilla's ocean biomes, which it places its sea structures in and no land ones.
+const VANILLA_OCEANS: [&str; 9] = [
+    "minecraft:ocean",
+    "minecraft:deep_ocean",
+    "minecraft:warm_ocean",
+    "minecraft:lukewarm_ocean",
+    "minecraft:deep_lukewarm_ocean",
+    "minecraft:cold_ocean",
+    "minecraft:deep_cold_ocean",
+    "minecraft:frozen_ocean",
+    "minecraft:deep_frozen_ocean",
+];
 
 pub fn hooks() -> Box<dyn Hooks> {
     Box::new(Worldgen {
@@ -158,6 +173,22 @@ impl Hooks for Worldgen {
             }
         }
 
+        let config = world.config();
+        let wet = columns.iter().any(|column| world.under_sea(column));
+        let sea = Sea {
+            wet,
+            // A carver cuts only its own chunk, so water one block over is all that
+            // can meet its caves.
+            wet_beside: config.fit_to_sea
+                && config.carvers
+                && !wet
+                && around(origin_x, origin_z).any(|(x, z)| world.under_sea(&world.column(x, z))),
+            vanilla_ocean: config.fit_to_sea
+                && config.structures
+                && vanilla_ocean(out, &columns, config.sea_level, [chunk_x, chunk_z], max_y),
+        };
+        let add = additions(config, sea);
+
         // The biomes decoration and the players see. A biome the world lacks (a data
         // pack took it out) keeps vanilla's there.
         let ids = Biome::ALL.map(|biome| out.biome_id(biome.id()));
@@ -172,13 +203,12 @@ impl Hooks for Worldgen {
             ids[column.biome.index()]
         });
 
-        let config = world.config();
         *event.generate = NativeGenerate::Replaced {
             // The game's surface rule reads vanilla's biome map, not this terrain's:
             // the terrain paints its own ground.
             surface: false,
-            carvers: config.carvers,
-            structures: config.structures,
+            carvers: add.carvers,
+            structures: add.structures,
             decorations: config.decorations,
         };
     }
@@ -204,4 +234,42 @@ impl Hooks for Worldgen {
             .map(|(low, high, block)| (low, high, states[block.index()]));
         out.replace(spans.collect(), out.biome_id(column.biome.id()));
     }
+}
+
+/// The columns just outside the chunk at `(origin_x, origin_z)`, one block over from
+/// each of its edges.
+fn around(origin_x: i32, origin_z: i32) -> impl Iterator<Item = (i32, i32)> {
+    (0..16).flat_map(move |i| {
+        [
+            (origin_x + i, origin_z - 1),
+            (origin_x + i, origin_z + 16),
+            (origin_x - 1, origin_z + i),
+            (origin_x + 16, origin_z + i),
+        ]
+    })
+}
+
+/// Whether vanilla's biome at the chunk's middle is an ocean: the chunk's biomes are
+/// still vanilla's here. The hook can't read a biome, but `set_biomes` says whether a
+/// quart changed, so a quart offered the biome it already has changes nothing. An
+/// offer that misses leaves its ocean behind, so each ocean is offered a quart of its
+/// own, stacked up the chunk's middle column from the ground or the sea's surface:
+/// above the ground vanilla's biome is the same all the way up, and this terrain's
+/// own biomes are written over all of them afterwards.
+fn vanilla_ocean(
+    out: &mut NativeProtoChunk<'_>,
+    columns: &[Column],
+    sea_level: i32,
+    [chunk_x, chunk_z]: [i32; 2],
+    max_y: i32,
+) -> bool {
+    // The column the biomes below take for these quarts, so all of them are written.
+    let middle = &columns[10 * 16 + 10];
+    let top = (max_y >> 2) - VANILLA_OCEANS.len() as i32;
+    let base = (middle.height.max(sea_level) >> 2).min(top);
+    VANILLA_OCEANS.iter().zip(base..).any(|(ocean, quart_y)| {
+        let quart = [chunk_x * 4 + 2, quart_y, chunk_z * 4 + 2];
+        out.biome_id(ocean)
+            .is_some_and(|id| !out.set_biomes(|at| (at == quart).then_some(id)))
+    })
 }

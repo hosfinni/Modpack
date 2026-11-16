@@ -7,6 +7,6 @@ publish = false
 [dependencies]
 # The launcher points this at the Horizon source it builds the game from. Any other
 # dependency must be a crate and version in Horizon's Cargo.lock.
-horizon-client = { git = "https://github.com/horizon-rust/horizon", rev = "4b08a43f1d32c3946f2638850f9d120bc7ff4a26", default-features = false }
+horizon-client = { git = "https://github.com/horizon-rust/horizon", rev = "9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0", default-features = false }
 # The bundle's own `[[crate]]` (horizon-mixin.toml).
 hz-seasons-core = { path = "../core" }

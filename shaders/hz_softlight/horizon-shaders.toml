@@ -1,4 +1,5 @@
-# Hardship Soft Light: a Horizon shader pack (docs/api/shaders.md, API 0.2).
+# Hardship Soft Light: a Horizon shader pack (docs/api/shaders.md, API 0.1: on the
+# 2026-11-13 Nightly the game draws 0.2 packs only with HORIZON_HDR_FRAME=float).
 #
 # Vanilla's look, lit a little better and cheaply: warm block light against cool
 # skylight, coloured light from soul fire and lava, a glow round a low sun, light
@@ -7,8 +8,8 @@
 schema = 1
 id = "hz_softlight"
 name = "Hardship Soft Light"
-version = "0.1.0"
-api = "0.2"
+version = "0.1.1"
+api = "0.1"
 description = "Vanilla's look with better light: warm lamps, cool sky, a low sun's glow and light shafts, at a fraction of a full shader pack's cost."
 authors = ["Horizon Hardship"]
 license = "MIT"
