@@ -32,10 +32,11 @@ ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / 'dist'
 # What a native bundle may hold besides `.rs` and `.toml` (Horizon docs/api/mod-files.md).
 NOTICES = ('README', 'LICENSE', 'LICENCE', 'COPYING', 'NOTICE')
-# Native mods whose code uses only Horizon's hook points and `Host`. They name the
-# hook API they were made on, and build on any Horizon that has it or a later one.
-# The others reach into the game's own types and build only on the pinned commit.
-HOOKS_ONLY = ('hz_travel', 'hz_worldgen', 'hz_arsenal')
+# Native mods that name the hook API they were made on instead of pinning a commit.
+# None: the launcher then builds on the newest Nightly or release installed, and
+# refuses one older than the hooks need. Pinned, every mod builds on the one commit
+# in modpack.toml, whatever Horizon version is installed.
+HOOKS_ONLY = ()
 
 
 def write_zip(path, files):
