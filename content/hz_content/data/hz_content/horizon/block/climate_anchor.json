@@ -1,0 +1,9 @@
+{
+  "template": "minecraft:lodestone",
+  "properties": {
+    "hardness": 3.5,
+    "light": 7,
+    "sounds": "minecraft:lodestone"
+  },
+  "item": true
+}

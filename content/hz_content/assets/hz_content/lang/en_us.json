@@ -1,0 +1,22 @@
+{
+  "block.hz_content.climate_anchor": "Climate Anchor",
+  "effect.hz_content.parched": "Parched",
+  "item.hz_content.berry_juice": "Berry Juice",
+  "item.hz_content.cactus_water": "Cactus Water",
+  "item.hz_content.chain_whip": "Chain Whip",
+  "item.hz_content.crushed_copper": "Crushed Copper Ore",
+  "item.hz_content.crushed_gold": "Crushed Gold Ore",
+  "item.hz_content.crushed_iron": "Crushed Iron Ore",
+  "item.hz_content.dagger": "Dagger",
+  "item.hz_content.glaive": "Glaive",
+  "item.hz_content.greatsword": "Greatsword",
+  "item.hz_content.halberd": "Halberd",
+  "item.hz_content.katana": "Katana",
+  "item.hz_content.melon_juice": "Melon Juice",
+  "item.hz_content.purified_water": "Purified Water",
+  "item.hz_content.rapier": "Rapier",
+  "item.hz_content.warhammer": "Warhammer",
+  "item.hz_content.washed_copper": "Washed Copper Ore",
+  "item.hz_content.washed_gold": "Washed Gold Ore",
+  "item.hz_content.washed_iron": "Washed Iron Ore"
+}

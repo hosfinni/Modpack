@@ -1,0 +1,177 @@
+# hz_survival: thirst, shared progression and smarter monsters. Written to
+# config/hz_survival.toml the first time the game runs with the mod; edit it there.
+# The server's file decides the rules. Clients read theirs only for tooltips.
+
+[thirst]
+enabled = true
+# How many minutes a full bar lasts standing still in a mild biome. Vanilla's food
+# bar lasts about 12 minutes of sprinting; with the multipliers below, thirst lasts
+# 50 minutes sprinting in a mild biome and about 28 sprinting through a desert.
+minutes_per_bar = 100.0
+sprint_multiplier = 2.0
+# Deserts, badlands, savannas, jungles and mangrove swamps.
+hot_multiplier = 1.75
+# Snowy and frozen biomes.
+cold_multiplier = 0.8
+nether_multiplier = 2.5
+burning_multiplier = 3.0
+# Standing in water or rain.
+wet_multiplier = 0.6
+# The bar runs from 0 to 20 (ten droplets). At or below `parched_at` the player
+# is slowed; at or below `dehydrated_at` they are weakened too and stop healing;
+# at 0 they take `damage` every `damage_interval_seconds`.
+parched_at = 6.0
+dehydrated_at = 2.0
+damage_interval_seconds = 4
+damage = 1.0
+# false: thirst never takes the last half heart.
+lethal = false
+drain_on_peaceful = false
+respawn_level = 20.0
+# Water straight from a bottle is untreated: this is the chance it brings on
+# Hunger for a while. Boil it (smelt a water bottle) for purified water.
+untreated_sickness_chance = 0.25
+untreated_sickness_seconds = 20
+untreated = ["potion:minecraft:water"]
+
+# What eating or drinking an item does to the bar, in half droplets. A key is an
+# item id, or `potion:<potion id>` for the contents of a potion bottle;
+# `potion:*` is any other potion.
+[thirst.drinks]
+"potion:minecraft:water" = 6.0
+"potion:*" = 3.0
+"minecraft:milk_bucket" = 6.0
+"minecraft:honey_bottle" = 2.0
+"minecraft:melon_slice" = 2.0
+"minecraft:glistering_melon_slice" = 2.0
+"minecraft:sweet_berries" = 1.0
+"minecraft:glow_berries" = 1.0
+"minecraft:apple" = 1.0
+"minecraft:golden_apple" = 2.0
+"minecraft:enchanted_golden_apple" = 4.0
+"minecraft:carrot" = 1.0
+"minecraft:chorus_fruit" = 1.0
+"minecraft:mushroom_stew" = 4.0
+"minecraft:beetroot_soup" = 4.0
+"minecraft:rabbit_stew" = 4.0
+"minecraft:suspicious_stew" = 4.0
+# Salty or spoiled food makes a player thirstier.
+"minecraft:dried_kelp" = -1.0
+"minecraft:rotten_flesh" = -1.0
+"minecraft:pufferfish" = -2.0
+"minecraft:spider_eye" = -1.0
+# The content pack's drinks.
+"hz_content:purified_water" = 10.0
+"hz_content:cactus_water" = 5.0
+"hz_content:berry_juice" = 8.0
+"hz_content:melon_juice" = 9.0
+
+# Skills: Mining grows by breaking ore, Smithing by refining it, Combat by killing
+# monsters. /skills shows a player's levels.
+[skills]
+enabled = true
+max_level = 20
+# The first level takes this much experience, and each level this much more than
+# the one before: 40, 80, 120...
+level_step = 40
+# Players this near one another (in blocks) are a party: the one who earns
+# experience gets `party_bonus` more for each member near (up to
+# `party_bonus_members`), and each of those gets `party_share` of it for nothing.
+party_range = 24.0
+party_bonus = 0.2
+party_bonus_members = 3
+party_share = 0.5
+# Ore is dug at this share of vanilla's speed at Mining level 0, and each level
+# adds to it: level 10 digs at vanilla's speed, level 20 at 1.3 times.
+mining_speed_base = 0.7
+mining_speed_per_level = 0.03
+# The chance, for each Smithing level, that washing a crushed ore gives two.
+smithing_bonus_per_level = 0.025
+# The extra damage each Combat level deals.
+combat_damage_per_level = 0.015
+washing_xp = 3
+smelting_xp = 1
+
+[skills.mining_xp]
+"minecraft:coal_ore" = 2
+"minecraft:deepslate_coal_ore" = 2
+"minecraft:copper_ore" = 3
+"minecraft:deepslate_copper_ore" = 3
+"minecraft:iron_ore" = 4
+"minecraft:deepslate_iron_ore" = 4
+"minecraft:gold_ore" = 6
+"minecraft:deepslate_gold_ore" = 6
+"minecraft:nether_gold_ore" = 3
+"minecraft:redstone_ore" = 4
+"minecraft:deepslate_redstone_ore" = 4
+"minecraft:lapis_ore" = 6
+"minecraft:deepslate_lapis_ore" = 6
+"minecraft:emerald_ore" = 12
+"minecraft:deepslate_emerald_ore" = 12
+"minecraft:diamond_ore" = 14
+"minecraft:deepslate_diamond_ore" = 14
+"minecraft:nether_quartz_ore" = 3
+"minecraft:ancient_debris" = 25
+
+[skills.combat_xp]
+default = 4
+"minecraft:zombie" = 5
+"minecraft:husk" = 5
+"minecraft:drowned" = 5
+"minecraft:skeleton" = 6
+"minecraft:stray" = 6
+"minecraft:bogged" = 6
+"minecraft:spider" = 5
+"minecraft:cave_spider" = 6
+"minecraft:creeper" = 7
+"minecraft:witch" = 10
+"minecraft:enderman" = 12
+"minecraft:pillager" = 7
+"minecraft:vindicator" = 10
+"minecraft:piglin_brute" = 14
+"minecraft:wither_skeleton" = 12
+"minecraft:blaze" = 10
+"minecraft:ravager" = 30
+
+# Strength in numbers: players near one another hit harder and are hurt less.
+[party]
+enabled = true
+range = 16.0
+damage_per_member = 0.1
+protection_per_member = 0.08
+members = 3
+
+# Monsters: tougher, and they fight as a pack.
+[mobs]
+enabled = true
+# A player's blows on these are divided by `toughness` (1.4 is as good as 40% more
+# health), and what they deal to players is multiplied by `damage`.
+toughness = 1.4
+damage = 1.25
+# A monster with nothing to attack joins one of its kind this near (in blocks)
+# that is attacking a player.
+pack_range = 20.0
+# Melee monsters in company come at their target from the sides.
+flank = true
+# A monster alone and under this share of its health backs away from its target.
+retreat_below = 0.3
+monsters = [
+    "minecraft:zombie", "minecraft:husk", "minecraft:drowned", "minecraft:zombie_villager",
+    "minecraft:skeleton", "minecraft:stray", "minecraft:bogged", "minecraft:wither_skeleton",
+    "minecraft:spider", "minecraft:cave_spider", "minecraft:creeper", "minecraft:witch",
+    "minecraft:pillager", "minecraft:vindicator", "minecraft:piglin_brute", "minecraft:hoglin",
+    "minecraft:zoglin", "minecraft:blaze", "minecraft:enderman", "minecraft:phantom",
+]
+# These never back away.
+fearless = ["minecraft:creeper", "minecraft:wither_skeleton", "minecraft:zoglin", "minecraft:phantom"]
+
+# Refining: ore smelted as it comes out of the ground gives only a few nuggets. For
+# a whole ingot it is crushed (in a stonecutter), washed (used on a cauldron of
+# water) and then smelted.
+[refining]
+enabled = true
+# Nuggets from smelting raw ore or an ore block; an ingot is nine. 0 keeps vanilla's
+# recipes.
+crude_nuggets = 3
+# The chance that washing an ore uses up a level of the cauldron's water.
+water_use = 0.25

@@ -1,0 +1,12 @@
+[package]
+name = "mod-hz_survival"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+# The launcher points this at the Horizon source it builds the game from. Any other
+# dependency must be a crate and version in Horizon's Cargo.lock.
+horizon-client = { git = "https://github.com/horizon-rust/horizon", rev = "4b08a43f1d32c3946f2638850f9d120bc7ff4a26", default-features = false }
+# The bundle's own `[[crate]]` (horizon-mixin.toml).
+hz-survival-core = { path = "../core" }

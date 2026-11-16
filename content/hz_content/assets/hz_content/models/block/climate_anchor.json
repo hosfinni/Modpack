@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "hz_content:block/climate_anchor_top",
+    "side": "hz_content:block/climate_anchor_side"
+  }
+}

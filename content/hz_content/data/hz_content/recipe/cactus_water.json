@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:cactus",
+    "minecraft:glass_bottle"
+  ],
+  "result": {
+    "id": "hz_content:cactus_water"
+  }
+}

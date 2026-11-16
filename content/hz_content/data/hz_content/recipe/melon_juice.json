@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:melon_slice",
+    "minecraft:melon_slice",
+    "minecraft:melon_slice",
+    "minecraft:glass_bottle"
+  ],
+  "result": {
+    "id": "hz_content:melon_juice"
+  }
+}

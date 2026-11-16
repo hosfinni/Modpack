@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "hz_content:block/climate_anchor"
+    }
+  }
+}

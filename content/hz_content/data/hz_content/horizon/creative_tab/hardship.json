@@ -1,0 +1,25 @@
+{
+  "title": "Horizon Hardship",
+  "icon": "hz_content:greatsword",
+  "items": [
+    "hz_content:purified_water",
+    "hz_content:cactus_water",
+    "hz_content:berry_juice",
+    "hz_content:melon_juice",
+    "hz_content:greatsword",
+    "hz_content:katana",
+    "hz_content:dagger",
+    "hz_content:glaive",
+    "hz_content:warhammer",
+    "hz_content:rapier",
+    "hz_content:halberd",
+    "hz_content:chain_whip",
+    "hz_content:crushed_iron",
+    "hz_content:washed_iron",
+    "hz_content:crushed_copper",
+    "hz_content:washed_copper",
+    "hz_content:crushed_gold",
+    "hz_content:washed_gold",
+    "hz_content:climate_anchor"
+  ]
+}

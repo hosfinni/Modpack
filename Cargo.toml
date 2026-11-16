@@ -1,0 +1,13 @@
+# Development workspace for the Horizon modpack: the rule crates of every native
+# mod, which have no game types, so `cargo test` runs in seconds without Horizon.
+#
+# The trait mods themselves (native/<id>/api) depend on Horizon's game crate and are
+# left out here. `python3 tools/horizon.py check` stages them beside a Horizon
+# checkout the way the launcher does and type-checks them against the real game.
+#
+# Each bundle under native/<id>/ is self-contained (the launcher copies it as it
+# is), so nothing in this file is inherited by a member.
+[workspace]
+resolver = "2"
+members = ["native/*/core"]
+exclude = ["native/*/api"]

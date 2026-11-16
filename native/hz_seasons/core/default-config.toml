@@ -1,0 +1,54 @@
+# hz_seasons: Biome Shift. Written to config/hz_seasons.toml the first time the game
+# runs with the mod; edit it there. The server's file decides the rules; a client
+# reads only `tints` and `banner` from its own.
+
+enabled = true
+
+# A shift happens when the night is slept through this many times.
+sleeps_per_shift = 3
+# Shifts in a year. A year runs spring, summer, autumn, winter: land warms toward
+# summer and cools toward winter, and comes back to how it was generated each spring
+# (apart from the drift below).
+shifts_per_year = 8
+
+# How far biomes move, in steps along a climate ladder such as
+# snowy plains - plains - savanna - desert. `season_steps` is the swing between
+# summer and winter; `drift_steps` is a pattern of warm and cold patches that
+# wanders across the map from one shift to the next, so that no two years are alike.
+season_steps = 1.0
+drift_steps = 1.0
+# The size of those patches and how far they wander each shift, in blocks.
+drift_scale = 900.0
+drift_speed = 260.0
+# A biome never moves more than this many steps from where it was generated.
+max_steps = 2
+
+# The work is spread over ticks: this many chunks are converted each tick, nearest
+# the players first. Chunks nobody has loaded are converted when they next load.
+chunks_per_tick = 4
+# Chunks within this many chunks of a player are converted first, during the
+# banner; the rest follow in the ticks after.
+priority_radius = 5
+
+# What follows the biome when it moves.
+[features]
+# Grass, sand and snow on the ground change with the biome.
+ground = true
+# Water freezes and thaws, snow settles and melts.
+ice_and_snow = true
+# Grass, ferns, dead bushes and cacti change; saplings take root in new forest.
+plants = true
+# Leaves fall from trees left in land that turned to desert.
+leaf_fall = true
+
+[anchor]
+# A climate anchor (hz_content:climate_anchor) keeps the land within this many
+# blocks of it as it is.
+radius = 48
+
+[client]
+# Tint grass and leaves by the season.
+tints = true
+# Show the black screen and the "Biome Shift" banner. false: the climate turns
+# without a word, and the land changes in plain sight.
+banner = true

@@ -1,0 +1,26 @@
+# The modpack's manifest: the Horizon build every part is made for, and the parts.
+# tools/horizon.py and tools/package.py read it.
+
+[modpack]
+name = "Horizon Hardship"
+version = "0.1.0"
+game = "26.3"
+
+[horizon]
+# Horizon's main at 2026-11-15. The newest Nightly then (2026-11-13, 9f42064) is too
+# old: its native hook API is 415, and Biome Shift needs `set_biomes` (624) and `title`
+# (555). Move the pack to the first Nightly that carries them with tools/repin.py,
+# which rewrites this file, every horizon-mixin.toml and every api/Cargo.toml.
+revision = "4b08a43f1d32c3946f2638850f9d120bc7ff4a26"
+hooks_api = 645
+# horizon-mixins, which applies the bundles' [[crate]]s.
+mixins_revision = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0"
+
+# Native mods are not part of the server's mod-list handshake yet, so players and the
+# server must install the same versions of these by hand (or from this pack).
+[native]
+hz_travel = "0.1.0"
+hz_survival = "0.1.0"
+hz_worldgen = "0.1.0"
+hz_seasons = "0.1.0"
+hz_arsenal = "0.1.0"

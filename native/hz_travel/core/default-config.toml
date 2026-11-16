@@ -1,0 +1,40 @@
+# hz_travel: what fast travel is taken away. Written to config/hz_travel.toml the
+# first time the game runs with the mod; edit it there. Server and clients should
+# use the same file, since the elytra rule changes item data on both sides.
+
+[elytra]
+# Takes the glider component off every item, so nothing can be flown with.
+# An elytra stays a wearable trophy.
+disable_gliding = true
+
+[riptide]
+# false: a trident with Riptide cannot be charged at all.
+enabled = false
+
+[ender_pearl]
+# false: a pearl is used up but never teleports.
+enabled = true
+# The farthest a pearl carries its thrower, in blocks. A longer throw lands the
+# player this far along the way. 0 means no limit.
+max_distance = 12.0
+
+[chorus_fruit]
+enabled = true
+
+[end_gateway]
+# Gateways are how the outer End is reached, so they stay on by default.
+enabled = true
+
+# The fastest a ridden vehicle may travel over the ground, in blocks per tick
+# (20 ticks a second, so 0.4 is 8 blocks a second). 0 means no limit.
+[vehicles]
+# Any boat or raft. A boat on water does about 0.4; on blue ice vanilla allows 3.6.
+boat = 0.45
+# Any minecart. Vanilla's top speed on powered rail is 0.4.
+minecart = 0.4
+# Everything else that can be ridden (horses, pigs, striders, camels, happy ghasts).
+other = 0.0
+
+# Limits for single entity types, which win over the groups above.
+[vehicles.kinds]
+"minecraft:happy_ghast" = 0.3

@@ -1,0 +1,34 @@
+# hz_worldgen: the shape of new land. Written to config/hz_worldgen.toml the first
+# time the game runs with the mod; edit it there. Only the server's file matters,
+# except for the far terrain a client draws ahead of its server, which wants the
+# same file. Changing it only affects chunks generated afterwards.
+
+# "tectonic": this mod builds the overworld's terrain and biomes.
+# "vanilla": the game's own generator (or a worldgen data pack such as Lithosphere,
+# see docs/worldgen.md) builds it, and this mod does nothing.
+terrain = "tectonic"
+
+sea_level = 63
+
+# The width of a tectonic plate, in blocks. Continents and oceans are a few plates
+# across, so this is the scale of the whole map.
+plate_size = 2400.0
+# The share of plates that are ocean floor.
+ocean_fraction = 0.45
+# How high ranges rise where plates collide: 1.0 reaches about y 250.
+mountain_scale = 1.0
+# The distance from the middle of a warm belt to the middle of the next cold belt,
+# in blocks. z = 0 lies half way between the two, so a world starts in temperate
+# land: north of it (negative z) is warmer, south of it colder, and the pattern
+# repeats.
+climate_band = 9000.0
+rivers = true
+
+# What vanilla still adds to the terrain. Structures are placed where the vanilla
+# generator would have put them, at the height its terrain would have had: buried
+# ones (strongholds, mineshafts, ancient cities, trial chambers) fit, but villages
+# and temples can sit above or below the ground. Turn it off for a world without
+# any structure, strongholds included.
+structures = true
+carvers = true
+decorations = true

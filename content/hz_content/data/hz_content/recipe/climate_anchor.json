@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ACA",
+    "CLC",
+    "ACA"
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "C": "minecraft:copper_ingot",
+    "L": "minecraft:lodestone"
+  },
+  "result": {
+    "id": "hz_content:climate_anchor"
+  }
+}

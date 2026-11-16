@@ -1,0 +1,16 @@
+{
+  "template": "minecraft:honey_bottle",
+  "max_stack_size": 16,
+  "components": {
+    "minecraft:consumable": {
+      "consume_seconds": 1.6,
+      "animation": "drink",
+      "sound": "minecraft:entity.generic.drink",
+      "has_consume_particles": false
+    },
+    "minecraft:use_remainder": {
+      "id": "minecraft:glass_bottle"
+    },
+    "!minecraft:food": {}
+  }
+}

@@ -1,0 +1,17 @@
+# hz_arsenal: weapon movesets. Written to config/hz_arsenal.toml the first time the
+# game runs with the mod; edit it there. The server's file decides the rules; a
+# client reads its own only for the tooltips.
+
+enabled = true
+
+# Scales every move's bonus over a plain hit: 0 makes every move hit like a plain
+# swing (the movesets stay, their damage doesn't), 1 is as designed, 2 doubles the
+# bonuses.
+bonus_scale = 1.0
+# Scales how long a weapon art takes to be ready again.
+cooldown_scale = 1.0
+# Name each move over the hotbar as it lands.
+announce_moves = true
+# Weapons whose movesets are turned off (they still work as plain weapons), by item
+# id: ["hz_content:chain_whip"].
+disabled = []
