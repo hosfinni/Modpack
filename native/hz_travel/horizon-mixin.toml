@@ -4,10 +4,10 @@
 # `horizon-launcher native-build <this folder> --instance <instance> --trust-native-code`.
 [mod]
 id = "hz_travel"
-version = "0.1.0"
+version = "0.1.1"
 
 [compatibility]
-horizon_revision = "4b08a43f1d32c3946f2638850f9d120bc7ff4a26"
+horizon_revision = "9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0"
 
 [api]
 path = "api"

@@ -45,7 +45,8 @@ out the same, and far terrain can be drawn before its chunks exist.
    bands), because the game's surface rule reads vanilla's biome map, not this one.
 
 Vanilla then adds its carved caves, its structures and its features (ores, trees,
-plants, lakes) on top, each of which the config can turn off.
+plants, lakes) on top, each of which the config can turn off. Caves and structures are
+kept out of this terrain's water (`fit_to_sea`, below).
 
 Everything is continuous: the height never jumps between neighbouring blocks at a plate
 edge. The tests walk tens of thousands of blocks across edges and junctions to hold
@@ -57,8 +58,21 @@ that.
   goes, and at what height, from its own terrain. Buried structures fit this terrain;
   villages, outposts and temples may not. `structures = false` removes every
   structure, strongholds included, which closes the way to the End.
-- **Caves are carved caves only.** The noise caves and aquifers of vanilla's terrain
-  are part of what this replaces.
+- **Structures keep to where both terrains agree about the sea** (`fit_to_sea`, on by
+  default). Vanilla places villages, temples and outposts where its own terrain had
+  land, and monuments, ruins and shipwrecks where it had sea. A chunk keeps its
+  structures only when vanilla's biome at its middle is an ocean exactly when this
+  terrain has water in the chunk. A structure that crosses such a coast is cut off at
+  the chunk's edge, and a stronghold under this terrain's sea can lose the part there:
+  if an eye of ender leads to one whose portal room is gone, travel on until it points
+  to another.
+- **Caves are carved caves only**, and none in water. The noise caves and aquifers of
+  vanilla's terrain are part of what this replaces. Vanilla's carvers fill what they
+  cut from vanilla's aquifer, which follows vanilla's terrain, so under this terrain's
+  sea they cut dry shafts through the water. With `fit_to_sea` a chunk with water in
+  it, or in a column beside it, has no carved caves. In a sample of seed 2026, about
+  3% of the chunks away from the sea lost theirs: ones with a river in them, or water
+  just beside them.
 - **Rivers follow noise, not slope.** They look right from above but do not flow
   downhill from a source.
 - Only the overworld is built. A superflat world is left alone.

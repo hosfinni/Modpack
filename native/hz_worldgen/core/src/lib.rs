@@ -40,6 +40,9 @@ pub struct Config {
     pub structures: bool,
     pub carvers: bool,
     pub decorations: bool,
+    /// Keep vanilla's caves and structures out of the chunks where they would meet
+    /// this terrain's water ([`additions`]).
+    pub fit_to_sea: bool,
 }
 
 impl Default for Config {
@@ -55,6 +58,7 @@ impl Default for Config {
             structures: true,
             carvers: true,
             decorations: true,
+            fit_to_sea: true,
         }
     }
 }
@@ -460,6 +464,11 @@ impl World {
         }
     }
 
+    /// Water stands over the column: sea, a river, a flooded valley.
+    pub fn under_sea(&self, column: &Column) -> bool {
+        column.height < self.config.sea_level
+    }
+
     /// The blocks of the column at `(x, z)`, bottom up, between `min_y` and
     /// `max_y` (the level's lowest block and one above its highest). The spans
     /// touch: what is above the last one is air.
@@ -499,6 +508,52 @@ impl World {
             push(top + 1, (sea + 1).min(max_y), Block::Water);
         }
         column
+    }
+}
+
+/// What vanilla adds to one chunk of this terrain.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Additions {
+    pub carvers: bool,
+    pub structures: bool,
+}
+
+/// The sea in one chunk, as this terrain and as vanilla's would have it.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Sea {
+    /// Water stands over some column of the chunk.
+    pub wet: bool,
+    /// Water stands over a column next to the chunk, in a neighbouring one.
+    pub wet_beside: bool,
+    /// Vanilla's biome at the chunk's middle is an ocean, so vanilla puts its sea
+    /// structures here and none of its land ones.
+    pub vanilla_ocean: bool,
+}
+
+/// What vanilla may add to a chunk of this terrain.
+///
+/// Vanilla's carvers fill what they cut from vanilla's own aquifer, which follows
+/// vanilla's terrain: under this terrain's sea, where vanilla had land, a carver
+/// would cut air out of the water, leaving dry shafts and walls of water in the sea.
+/// So a chunk with water in it, or beside it, gets no carved caves. (A carver writes
+/// only into its own chunk, so a dry chunk's caves stop at its edge, a block short of
+/// any water beside it.)
+///
+/// Vanilla places structures by its own biomes: villages, temples and outposts where
+/// it had land, monuments, ruins and shipwrecks where it had sea. A chunk keeps them
+/// only where both terrains agree on whether there is water: no village stands in this
+/// terrain's sea, no monument on its land. Pieces of a structure that reach into a
+/// chunk that keeps none are cut off at that chunk's edge.
+pub fn additions(config: &Config, sea: Sea) -> Additions {
+    if !config.fit_to_sea {
+        return Additions {
+            carvers: config.carvers,
+            structures: config.structures,
+        };
+    }
+    Additions {
+        carvers: config.carvers && !sea.wet && !sea.wet_beside,
+        structures: config.structures && sea.wet == sea.vanilla_ocean,
     }
 }
 
@@ -979,5 +1034,84 @@ mod tests {
             assert_eq!(block.index(), i);
             assert!(block.id().starts_with("minecraft:"));
         }
+    }
+
+    #[test]
+    fn water_is_exactly_where_a_column_is_under_the_sea() {
+        let world = world(2026);
+        let mut spans = Vec::new();
+        let (mut wet, mut dry) = (0, 0);
+        for i in 0..4000 {
+            let (x, z) = (i * 37 - 70_000, i * 53 - 90_000);
+            let column = world.spans(x, z, -64, 320, &mut spans);
+            let has_water = spans.iter().any(|&(_, _, block)| block == Block::Water);
+            assert_eq!(world.under_sea(&column), has_water, "at {x} {z}");
+            if has_water { wet += 1 } else { dry += 1 }
+        }
+        assert!(wet > 400 && dry > 400, "{wet} wet, {dry} dry");
+    }
+
+    #[test]
+    fn caves_stay_out_of_the_sea_and_structures_go_where_the_terrains_agree() {
+        let config = Config::shipped();
+        let dry = Sea::default();
+        let all = Additions {
+            carvers: true,
+            structures: true,
+        };
+        assert_eq!(additions(&config, dry), all);
+        // Water in the chunk or beside it: no caves.
+        for sea in [
+            Sea {
+                wet: true,
+                vanilla_ocean: true,
+                ..dry
+            },
+            Sea {
+                wet_beside: true,
+                ..dry
+            },
+        ] {
+            assert!(!additions(&config, sea).carvers, "{sea:?}");
+        }
+        // Structures where both have sea, or both land.
+        let ocean = Sea {
+            wet: true,
+            vanilla_ocean: true,
+            ..dry
+        };
+        assert!(additions(&config, ocean).structures);
+        let village_at_sea = Sea { wet: true, ..dry };
+        assert!(!additions(&config, village_at_sea).structures);
+        let monument_on_land = Sea {
+            vanilla_ocean: true,
+            ..dry
+        };
+        assert!(!additions(&config, monument_on_land).structures);
+        // A coast beside a dry chunk keeps its structures, not its caves.
+        assert_eq!(
+            additions(
+                &config,
+                Sea {
+                    wet_beside: true,
+                    ..dry
+                }
+            ),
+            Additions {
+                carvers: false,
+                structures: true
+            }
+        );
+        // Switched off, or turned off by the config.
+        let unfitted = Config::parse("fit_to_sea = false").unwrap();
+        assert_eq!(additions(&unfitted, village_at_sea), all);
+        let none = Config::parse("carvers = false\nstructures = false").unwrap();
+        assert_eq!(
+            additions(&none, dry),
+            Additions {
+                carvers: false,
+                structures: false
+            }
+        );
     }
 }

@@ -2,7 +2,9 @@
 
 Every part of Horizon's native mod API the pack uses, and what for. Horizon's
 `docs/native-mods.md` and `native-hooks.json` are the reference; the numbers there
-(the hook API a helper arrived in) are why the pack needs hook API 645.
+(the hook API a helper arrived in) are only a guide: the pack pins the 2026-11-13
+Nightly (hook API 415), which has every hook and helper below, as
+`tools/horizon.py check` shows by compiling the mods against it.
 
 All five mods are *trait mods*: each `native/<id>/api` crate exports
 `pub fn hooks() -> Box<dyn Hooks>`, and the launcher links it into the game. None of

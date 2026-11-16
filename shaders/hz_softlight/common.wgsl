@@ -1,8 +1,8 @@
 // Shared by every stage of the pack.
 
-// A colour's brightness, in the frame's primaries.
+// A colour's brightness: Rec. 709's weights, the primaries of API 0.1's frame.
 fn luma(c: vec3<f32>) -> f32 {
-    return dot(c, frame.luminance);
+    return dot(c, vec3<f32>(0.2126, 0.7152, 0.0722));
 }
 
 // How much daylight there is: 0 at night, 1 once the sun is up.

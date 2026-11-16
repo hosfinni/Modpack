@@ -19,37 +19,54 @@ textures, no code) and a shader pack.
 
 ## Status
 
-This has **not been run in the game**. It was built in an environment with no copy of
-Minecraft and no GPU, so nothing below was play-tested. What was checked:
+Version 0.1.0 was tried in the game and only its terrain appeared, most likely because
+it was built on a newer Horizon than its pin, where the launcher left the other mods
+out (below). 0.1.1 is pinned to the
+2026-11-13 Nightly and keeps caves and structures out of the tectonic seas. 0.1.1 has
+**not been run in the game**: it was built in an environment with no copy of Minecraft
+and no GPU. What was checked, on the pinned Nightly (`9f42064`):
 
 | Check | Result |
 | --- | --- |
-| Rules of every mod (`cargo test`) | 108 tests pass |
+| Rules of every mod (`cargo test`) | 110 tests pass |
 | Lints (`cargo clippy -- -D warnings`) on the rule crates | clean |
 | Every mod type-checked against Horizon's real game crate at the pinned commit | compiles |
-| The bundles run through the real `horizon-mixins` (`plan`, `apply`), then built in Horizon's own workspace with `--locked` | ok |
+| Every hook the mods implement is dispatched to trait mods there, and every `Host` helper they call is implemented | yes |
+| The bundles run through `horizon-mixins apply` at the launcher's own revision (`5a64af9`) | ok |
 | Horizon's registry check (`cargo horizon-mod check`) on all seven packed files | pass |
-| The shader pack's WGSL validated by Horizon's checker (naga, for Vulkan, Metal and DirectX 12) | pass |
+| The shader pack checked by Horizon's `horizon-shader check` (shader API 0.1, which this Nightly draws without a switch) | pass |
 | The terrain looked at as rendered maps | see `docs/worldgen.md` |
+
+On Horizon's `main` of 2026-11-16 four of the mods don't compile (the mod API moved out
+of `horizon_client`), which is what a build there leaves out.
 
 Expect bugs the first time it runs. The numbers (thirst rates, move damage, monster
 toughness, shift sizes) are first guesses, all in config files.
 
-### Pinned to a commit that is not a Nightly
+### Pinned to the 2026-11-13 Nightly
 
-Native mods build on one exact Horizon commit. The pack pins Horizon's `main` of
-2026-11-15 (`4b08a43`), because the newest Nightly at the time (2026-11-13) lacked the
-hooks Biome Shift needs. When a Nightly from 2026-11-15 or later exists, move the pack
-to it with `python3 tools/repin.py <commit>`.
+Native mods build on one exact Horizon commit. The pack pins the Nightly of 2026-11-13
+(`9f42064`, tag `nightly-source/2026-11-13-9f42064`), and the launcher builds every mod
+on that commit whatever Horizon version is installed. Build on it, not on a newer
+`main`: when a mod doesn't compile on the commit a build uses, the launcher leaves it out
+and builds the rest, so a build on another commit can quietly end up with only some of
+the pack. The Mods page and `native-mods.json` (`left_out`) say which mods were left
+out and why. To move the pack to another commit, run
+`python3 tools/repin.py <commit> --hooks-api <N>`, then `python3 tools/horizon.py check`.
 
 ### Known limits
 
 - **Villages and temples on tectonic terrain.** Vanilla still places structures where
-  its own terrain would have had them. Buried ones (strongholds, mineshafts, ancient
-  cities, trial chambers) fit. Surface ones can float or sit buried. Set
-  `structures = false` in `config/hz_worldgen.toml` to have none (strongholds included),
-  or `terrain = "vanilla"` to keep vanilla's terrain.
-- **Tectonic caves** are vanilla's carved caves only: no noise caves, no aquifers.
+  its own terrain would have had them. Where vanilla had land and the tectonic terrain
+  has sea (or the other way round), the chunk gets no structures, so no village stands
+  in the sea and no monument on land; a structure crossing such a coast is cut off
+  there, and so can a stronghold under the sea be. On land, surface structures can
+  still float or sit buried. Set `structures = false` in `config/hz_worldgen.toml` to
+  have none (strongholds included), or `terrain = "vanilla"` to keep vanilla's terrain.
+- **Tectonic caves** are vanilla's carved caves only: no noise caves, no aquifers, and
+  none in a chunk with sea, river or lake water in it or beside it (vanilla's carvers
+  would cut dry holes through the water). `fit_to_sea = false` brings back vanilla's
+  caves and structures everywhere.
 - **Ores are harder to refine, not rarer.** Smelting raw ore gives nuggets; a whole
   ingot takes crushing, washing and smelting. Ore veins are generated as in vanilla.
 - **Weapon moves have no animations of their own.** A move shows as its name over the
@@ -61,7 +78,8 @@ to it with `python3 tools/repin.py <commit>`.
 
 ## Install
 
-1. Install Horizon with its launcher, on a version at the pinned commit (see above).
+1. Install Horizon with its launcher, on the Nightly of 2026-11-13 (see above). Build
+   the native mods on it, not with **Rebuild on Horizon** onto a newer version.
 2. Build the files: `python3 tools/package.py` writes them to `dist/`.
 3. Put `hz_content-*.hmod` in the instance's `horizon-mods/` folder.
 4. Put the five `.hnmod` files in `horizon-native-mods/`. The launcher compiles native

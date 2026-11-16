@@ -32,3 +32,15 @@ rivers = true
 structures = true
 carvers = true
 decorations = true
+
+# Keep vanilla's caves and structures out of this terrain's water. Vanilla decides
+# both from its own terrain, so where it had land and this terrain has sea, its
+# carvers would cut dry holes through the water and its villages would stand in the
+# sea; where it had sea and this terrain has land, monuments and shipwrecks would
+# sit on dry ground. With this on, a chunk with water in it or beside it has no
+# carved caves, and a chunk keeps its structures only where both terrains agree on
+# whether there is water. A structure that crosses such a coast is cut off there,
+# and so can a stronghold under the sea: if the eye of ender leads to one whose
+# portal room was cut away, travel on until it points to another. false keeps
+# vanilla's caves and structures everywhere, as before.
+fit_to_sea = true
